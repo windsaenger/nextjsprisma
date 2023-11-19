@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  id                   String    @id(map: "PK_accounts") @default(dbgenerated("newid()"), map: "DF__accounts__id__239E4DCF") @db.UniqueIdentifier
+  compound_id          String    @unique(map: "compound_id") @db.VarChar(255)
+  user_id              String    @db.UniqueIdentifier
+  provider_type        String    @db.VarChar(255)
+  provider_id          String    @db.VarChar(255)
+  provider_account_id  String    @db.VarChar(255)
+  refresh_token        String?   @db.Text
+  access_token         String?   @db.Text
+  access_token_expires DateTime? @db.DateTime
+  created_at           DateTime  @default(now(), map: "DF__accounts__create__24927208") @db.DateTime
+  updated_at           DateTime  @default(now(), map: "DF__accounts__update__25869641") @db.DateTime
+
+  @@index([provider_account_id], map: "provider_account_id")
+  @@index([provider_id], map: "provider_id")
+  @@index([user_id], map: "user_id")
+  @@map("accounts")
+}
+
+model role {
+  id        String   @id(map: "PK_roles") @default(dbgenerated("newid()"), map: "DF_roles_id") @db.UniqueIdentifier
+  name      String   @db.NVarChar(50)
+  createdAt DateTime @default(now(), map: "DF_roles_createdAt") @db.DateTime
+  updatedAt DateTime @default(now(), map: "DF_roles_updatedAt") @db.DateTime
+
+  @@map("roles")
+}
+
+model session {
+  id            String   @id(map: "PK_sessions") @default(dbgenerated("newid()"), map: "DF__sessions__id__276EDEB3") @db.UniqueIdentifier
+  user_id       String   @db.UniqueIdentifier
+  expires       DateTime @db.DateTime
+  session_token String   @unique(map: "session_token") @db.VarChar(255)
+  access_token  String   @unique(map: "access_token") @db.VarChar(255)
+  created_at    DateTime @default(now(), map: "DF__sessions__create__286302EC") @db.DateTime
+  updated_at    DateTime @default(now(), map: "DF__sessions__update__29572725") @db.DateTime
+
+  @@map("sessions")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B619C1BD934") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model userole {
+  userId String @db.UniqueIdentifier
+  roleId String @db.UniqueIdentifier
+
+  @@id([userId, roleId], map: "PK_useroles")
+  @@map("useroles")
+}
+
+model user {
+  id             String    @id(map: "PK_users") @default(dbgenerated("newid()"), map: "DF__users__id__2B3F6F97") @db.UniqueIdentifier
+  name           String?   @db.VarChar(255)
+  firstname      String?   @db.VarChar(255)
+  lastname       String?   @db.VarChar(255)
+  email          String?   @unique(map: "email") @db.VarChar(255)
+  email_verified DateTime? @db.DateTime
+  image          String?   @db.VarChar(255)
+  hashedPassword String    @db.VarChar(255)
+  created_at     DateTime  @default(now(), map: "DF__users__created_a__2C3393D0") @db.DateTime
+  updated_at     DateTime  @default(now(), map: "DF__users__updated_a__2D27B809") @db.DateTime
+
+  @@map("users")
+}
+
+model verification_requests {
+  id         String   @default(dbgenerated("newid()"), map: "DF__verification__id__2F10007B") @db.UniqueIdentifier
+  identifier String   @db.VarChar(255)
+  token      String   @unique(map: "token") @db.VarChar(255)
+  expires    DateTime @db.DateTime
+  created_at DateTime @default(now(), map: "DF__verificat__creat__300424B4") @db.DateTime
+  updated_at DateTime @default(now(), map: "DF__verificat__updat__30F848ED") @db.DateTime
+}
