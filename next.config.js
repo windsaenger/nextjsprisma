@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    basePath: isProd ? '' : '',
+    basePath: '',
     //output: 'export',
    
     // Optional: Change links `/me` -> `/me/` and emit `/me.html` -> `/me/index.html`
